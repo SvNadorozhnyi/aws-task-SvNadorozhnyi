@@ -51,13 +51,16 @@ resource "aws_route_table_association" "public" {
 resource "aws_security_group" "instance" {
   name_prefix = "${var.environment}-instance-sg-"
 
-  ingress {
-    from_port   = var.allowed_ports[0]
-    to_port     = var.allowed_ports[length(var.allowed_ports) - 1]
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  // Ingress rule to allow traffic on all specified ports
+  dynamic "ingress" {
+    for_each = var.allowed_ports
+    content {
+      from_port   = ingress.key
+      to_port     = ingress.key
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
-
 }
 
 resource "aws_instance" "example" {
@@ -67,7 +70,7 @@ resource "aws_instance" "example" {
   security_groups = [aws_security_group.instance.name]
 
   tags = {
-    Name = "${var.environment}-ec2-instance"
+    Name = var.instance_tag
   }
 }
 
@@ -98,4 +101,3 @@ output "public_subnet_AZ" {
 output "ec2_region" {
   value = var.region
 }
-

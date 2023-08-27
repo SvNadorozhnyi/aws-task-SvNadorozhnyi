@@ -65,7 +65,6 @@ resource "aws_security_group" "instance" {
 resource "aws_instance" "example" {
   ami           = var.instance_AMI
   instance_type = var.instance_type
-  subnet_id     = aws_subnet.public[0].id
   security_groups = [aws_security_group.instance.name]
 
   tags = {

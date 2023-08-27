@@ -51,7 +51,6 @@ resource "aws_route_table_association" "public" {
 resource "aws_security_group" "instance" {
   name_prefix = "${var.environment}-instance-sg-"
 
-  // Ingress rule to allow traffic on all specified ports
   dynamic "ingress" {
     for_each = var.allowed_ports
     content {
@@ -70,6 +69,34 @@ resource "aws_instance" "example" {
   security_groups = [aws_security_group.instance.name]
 
   tags = {
-    Name = var.instance_tag
+    Name = var.environment
   }
+}
+
+output "ec2_public_ip" {
+  value = aws_instance.example.public_ip
+}
+
+output "ec2_ami" {
+  value = var.instance_AMI
+}
+
+output "ec2_type" {
+  value = var.instance_type
+}
+
+output "public_vpc_id" {
+  value = aws_vpc.main.id
+}
+
+output "ec2_subnet_id" {
+  value = aws_subnet.public[0].id
+}
+
+output "public_subnet_AZ" {
+  value = aws_subnet.public[0].availability_zone
+}
+
+output "ec2_region" {
+  value = var.region
 }

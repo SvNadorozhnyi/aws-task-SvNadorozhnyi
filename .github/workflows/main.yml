@@ -1,0 +1,24 @@
+name: Test AWS Terraform
+
+on: [ push ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+    - uses: actions/checkout@v3
+      name: Checkout source code
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_wrapper: false
+
+    - name: Terraform Init
+      run: terraform init
+      
+    - name: Check Terraform Config
+      run: bash -e ./.github/aws_tf_check.sh
